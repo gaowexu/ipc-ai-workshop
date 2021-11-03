@@ -135,22 +135,22 @@ export class IpcAiTrainStack extends cdk.Stack {
         this,
         'ipcAiTrainNotebookLifecycleConfig',
         {
+            notebookInstanceLifecycleConfigName: "ipcAiTrainNotebookLifecycleConfig",
             onCreate: [{content: cdk.Fn.base64(onCreateScript!)}],
         }
     );
 
-    new sagemaker.CfnNotebookInstance(
+    const ipcAiTrainPlatform = new sagemaker.CfnNotebookInstance(
         this,
-        'ipcAiTrainNotebookInstance',
+        'ipcAiTrainPlatform',
         {
+            notebookInstanceName: "ipcAiTrainPlatform",
             lifecycleConfigName: ipcAiTrainNotebookLifecycleConfig.notebookInstanceLifecycleConfigName,
             roleArn: ipcAiTrainNotebookRole.roleArn,
             instanceType: 'ml.g4dn.xlarge',
             volumeSizeInGb: 128,
         }
     );
-
-
 
 
   }
