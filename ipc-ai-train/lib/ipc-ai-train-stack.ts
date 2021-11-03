@@ -15,10 +15,11 @@ export class IpcAiTrainStack extends cdk.Stack {
     /**
      * Provision of S3 Bucket, which stores the trained models
      */
-    const ipcAiModelsZoo = new s3.Bucket(
+    const ipcModelsZoo = new s3.Bucket(
         this,
-        'ipcAiModelsZoo',
+        'ipcModelsZoo',
         {
+            bucketName: "ipcModelsZoo",
             removalPolicy: cdk.RemovalPolicy.DESTROY,
             autoDeleteObjects: true,
         }
@@ -28,9 +29,9 @@ export class IpcAiTrainStack extends cdk.Stack {
     /**
      * Provision of EC2 instance for object detection training using YOLO-v4
      */
-    const ipcAiEc2Vpc = new ec2.Vpc(
+    const ipcEc2Vpc = new ec2.Vpc(
         this,
-        'ipcAiEc2Vpc',
+        'ipcEc2Vpc',
         {
             maxAzs: 2,
             cidr: '10.0.0.0/21',
@@ -47,23 +48,24 @@ export class IpcAiTrainStack extends cdk.Stack {
         }
     );
 
-    const ipcAiTrainEc2SecurityGroup = new ec2.SecurityGroup(
+    const ipcEc2SecGroup = new ec2.SecurityGroup(
         this,
-        'ipcAiTrainEc2SecurityGroup',
+        'ipcEc2SecGroup',
         {
             description: 'security group for public subnets',
-            vpc: ipcAiEc2Vpc,
+            vpc: ipcEc2Vpc,
             allowAllOutbound: true,
             disableInlineRules: true
     });
 
-    ipcAiTrainEc2SecurityGroup.addIngressRule(
+    ipcEc2SecGroup.addIngressRule(
         ec2.Peer.anyIpv4(),  ec2.Port.tcp(22), 'allow SSH access from Internet');
 
-    const ipcAiTrainEc2Role = new iam.Role(
+    const ipcEc2Role = new iam.Role(
         this,
-        'ipcAiTrainEc2Role',
+        'ipcEc2Role',
         {
+            roleName: "ipcEc2Role",
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'),
@@ -74,17 +76,17 @@ export class IpcAiTrainStack extends cdk.Stack {
         }
     );
 
-    const ipcAiTrainEc2Instance = new ec2.Instance(
+    const ipcEc2 = new ec2.Instance(
         this,
-        "ipcAiTrainEc2Instance",
+        "ipcEc2",
         {
-            vpc: ipcAiEc2Vpc,
+            vpc: ipcEc2Vpc,
             instanceType: ec2.InstanceType.of(InstanceClass.G4DN, InstanceSize.XLARGE),
             machineImage: ec2.MachineImage.genericLinux({
                 'us-east-1': "ami-0747bdcabd34c712a"
             }),
-            role: ipcAiTrainEc2Role,
-            securityGroup: ipcAiTrainEc2SecurityGroup,
+            role: ipcEc2Role,
+            securityGroup: ipcEc2SecGroup,
             blockDevices: [
                 {
                     deviceName: "/dev/sda1",
@@ -94,7 +96,7 @@ export class IpcAiTrainStack extends cdk.Stack {
         }
     );
 
-    ipcAiTrainEc2Instance.userData.addCommands(
+    ipcEc2.userData.addCommands(
         'cd /home/ubuntu && sudo apt-get update && ' +
         'sudo apt-get install ec2-instance-connect &&' +
         'sudo apt-get install -y git cmake awscli libopencv-dev python3-pip unzip zip && ' +
@@ -116,10 +118,11 @@ export class IpcAiTrainStack extends cdk.Stack {
     /**
      * Provision of SageMaker notebook for training pedestrian gender classification & cloth color classification
      */
-    const ipcAiTrainNotebookRole = new iam.Role(
+    const ipcNbRole = new iam.Role(
         this,
-        'ipcAiTrainNotebookRole',
+        'ipcNbRole',
         {
+            roleName: "ipcNbRole",
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
@@ -131,22 +134,22 @@ export class IpcAiTrainStack extends cdk.Stack {
     );
 
     const onCreateScript = fs.readFileSync('./notebook/onCreate.sh', 'utf8');
-    const ipcAiTrainNotebookLifecycleConfig = new sagemaker.CfnNotebookInstanceLifecycleConfig(
+    const ipcNbLcConfig = new sagemaker.CfnNotebookInstanceLifecycleConfig(
         this,
-        'ipcAiTrainNotebookLifecycleConfig',
+        'ipcNbLcConfig',
         {
-            notebookInstanceLifecycleConfigName: "ipcAiTrainNotebookLifecycleConfig",
+            notebookInstanceLifecycleConfigName: "ipcNbLcConfig",
             onCreate: [{content: cdk.Fn.base64(onCreateScript!)}],
         }
     );
 
-    const ipcAiTrainPlatform = new sagemaker.CfnNotebookInstance(
+    const ipcTrainPlatform = new sagemaker.CfnNotebookInstance(
         this,
-        'ipcAiTrainPlatform',
+        'ipcTrainPlatform',
         {
-            notebookInstanceName: "ipcAiTrainPlatform",
-            lifecycleConfigName: ipcAiTrainNotebookLifecycleConfig.notebookInstanceLifecycleConfigName,
-            roleArn: ipcAiTrainNotebookRole.roleArn,
+            notebookInstanceName: "ipcTrainPlatform",
+            lifecycleConfigName: ipcNbLcConfig.notebookInstanceLifecycleConfigName,
+            roleArn: ipcNbRole.roleArn,
             instanceType: 'ml.g4dn.xlarge',
             volumeSizeInGb: 128,
         }
