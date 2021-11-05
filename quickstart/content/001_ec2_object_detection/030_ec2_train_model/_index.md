@@ -95,7 +95,7 @@ tail -f persons_train.log
 ```
 ![Image](/images/030_ec2_train_model/train-step-8.png)
 键入`CTRL+C`可以中断查看日志。
-{{% notice warning %}}
+{{% notice info %}}
 训练YOLO-V4目标检测模型，依赖于三个配置，即`darknet/cfg/yolov4-persons.cfg`，`darknet/data/persons.names`和`darknet/data/persons.data`，这三个模型分别
 制定了YOLO-V4模型细节和训练周期，学习速率；目标类别信息；和训练数据集合路径配置。
 ![Image](/images/030_ec2_train_model/train-step-9.png)

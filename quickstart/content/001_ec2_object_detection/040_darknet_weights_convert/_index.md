@@ -2,7 +2,7 @@
 title: "3. Darknet模型TensorRT优化"
 date: 2018-10-03T10:17:52-07:00
 draft: false
-weight: 30
+weight: 40
 ---
 
 1. 由于`Darknet`训练得到的模型是`.weights`类型，为了提升模型的推理速度，可以对其进行`TensorRT`优化。
@@ -77,10 +77,8 @@ python3 onnx_to_tensorrt.py -m yolov4-persons --verbose
 ```
 运行截图如下所示：
 ![Image](/images/040_darknet_weights_convert/convert-step-3.png)
-
-
-
-
-
-
-
+等待约十分钟之后，可以生成`yolov4-persons.trt`模型，如下图所示：
+![Image](/images/040_darknet_weights_convert/convert-step-4.png)
+{{% notice info %}}
+至此，您已经完成了基于YOLO-v4的行人检测训练过程以及模型TensorRT优化过程。
+{{% /notice%}}
