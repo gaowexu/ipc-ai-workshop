@@ -1,4 +1,0 @@
-Amplify project setup:
-- connect repo
-- configure env variables to include TEMPLATE_BUCKET and GITHUB_TOKEN
-- configure service role 
