@@ -5,10 +5,9 @@ chapter: true
 draft: false
 ---
 
-#        部署说明      
+#        资源清理      
 
-接下来我们将完成在 AWS IOT 云端的配置，将云端的机器学习模型和 Lambda 推理代码部署到设备端。
+在整个训练营中，我们创建了EC2服务器，SageMaker Notebook，CloudFormation堆栈，本章节演示如何将这些资源删除掉，以免产生不必要的费用。
 
-我们将分别从以下步骤进行部署：
 
 {{% children showhidden="false" %}}

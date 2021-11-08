@@ -1,0 +1,149 @@
+Resources:
+  ipcNbRole93CA00CB:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonSageMakerFullAccess
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonS3FullAccess
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/CloudWatchLogsFullAccess
+      RoleName: ipcNbRole-Stack
+    Metadata:
+      aws:cdk:path: IpcAiTrainStack/ipcNbRole/Resource
+  ipcNbLcConfig:
+    Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
+    Properties:
+      NotebookInstanceLifecycleConfigName: ipcNbLcConfig-Stack
+      OnCreate:
+        - Content:
+            Fn::Base64: |
+              #!/bin/bash
+
+              set -e
+
+              # download scripts and dataset
+              cd /home/ec2-user/SageMaker
+              echo "Fetching the scripts and data..."
+
+              wget -c https://workshop-anker.s3.amazonaws.com/scripts/down_color_classifier.ipynb
+              wget -c https://workshop-anker.s3.amazonaws.com/scripts/top_color_classifier.ipynb
+              wget -c https://workshop-anker.s3.amazonaws.com/scripts/gender_classifier.ipynb
+              wget -c https://workshop-anker.s3.amazonaws.com/scripts/multi-task-classifier.ipynb
+    Metadata:
+      aws:cdk:path: IpcAiTrainStack/ipcNbLcConfig
+  ipcTrainPlatform:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      InstanceType: ml.g4dn.xlarge
+      RoleArn:
+        Fn::GetAtt:
+          - ipcNbRole93CA00CB
+          - Arn
+      LifecycleConfigName: ipcNbLcConfig-Stack
+      NotebookInstanceName: ipcTrainPlatform-Stack
+      VolumeSizeInGB: 128
+    Metadata:
+      aws:cdk:path: IpcAiTrainStack/ipcTrainPlatform
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/22MwQrCMBBEv8V7um1Q9Cr0JIiH+gVxuy3btFlIUkVC/t1Ur55mmDczGvS+gWZ3Nq9QYW/rhOIJ0j0atKoVF6JfMap2cB0FWT3S5gvoObK4rLZhYrNA6mT+wk2zCmakxVjykEp2k0gPEXsph8YhXXkgfONM5WngUf2p5JyVk55gCvVTH0Cf4LibAnPlVxd5Ieh++gHFSJwYxAAAAA==
+    Metadata:
+      aws:cdk:path: IpcAiTrainStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+

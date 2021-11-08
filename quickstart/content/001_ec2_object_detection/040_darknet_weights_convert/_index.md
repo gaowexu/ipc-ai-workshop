@@ -5,17 +5,17 @@ draft: false
 weight: 40
 ---
 
-1. 由于`Darknet`训练得到的模型是`.weights`类型，为了提升模型的推理速度，可以对其进行`TensorRT`优化。
+1. 由于Darknet训练得到的模型是`.weights`类型，为了提升模型的推理速度，可以对其进行TensorRT优化。
 
-    `TensorRT`可以显著加速推理的速度，为了将`Darknet`训练好的`YOLO-v4`模型转化为`TensorRT`版本，我们首先 借助于
-[Open Neural Network Exchange](https://onnx.ai/)，将`Darknet`模型转化为`onnx`格式，再将`onnx`格式转化为`TensorRT`格式。
+    TensorRT可以显著加速推理的速度，为了将Darknet训练好的YOLO-v4模型转化为TensorRT版本，我们首先 借助于
+[Open Neural Network Exchange](https://onnx.ai/)，将Darknet模型转化为onnx格式，再将onnx格式转化为TensorRT格式。
    {{% notice warning %}}
-   为了与训练环境不冲突，建议重新开启一台镜像为`Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)`，
-    实例类型为`g4dn.xlarge`EC2机器，来进行模型转化，开启EC2实例的步骤与**启动EC2实例**小节中一致。
+   为了与训练环境不冲突，建议重新开启一台镜像为Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)，
+    实例类型为g4dn.xlargeEC2机器，来进行模型转化，开启EC2实例的步骤与**启动EC2实例**小节中一致。
    {{% /notice%}}
 
-    重新开启另一台镜像为`Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)`，
-    实例类型为`g4dn.xlarge`EC2机器，用与**启动EC2实例**小节中同样的方法SSH登录进实例，命令行执行如下安装命令：
+    重新开启另一台镜像为Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)，
+    实例类型为g4dn.xlarge的EC2机器，用与**启动EC2实例**小节中同样的方法SSH登录进实例，命令行执行如下安装命令：
     
     ```angular2html
     sudo apt-get update &&
@@ -48,16 +48,12 @@ git clone https://github.com/Gaowei-Xu/tensorrt_demos.git
 cd tensorrt_demos/plugins && make
 ```
 运行截图如下所示：
-![Image](/images/040_darknet_weights_convert/convert-step-1.png)
-
+<img src="/images/040_darknet_weights_convert/convert-step-1.png" alt="drawing" width="80%"/>
 
 3. 模型转化：darknet转化为ONNX格式
 
-    下载`Darknet`框架中训练好的`YOLO-v4`模型及其对应的配置文件`yolov4-persons.cfg`， 然后将模型转化为`ONNX`格式:
-      {{% notice warning %}}
-      由于**训练YOLO-V4**章节中训练过程比较耗时，在训练完成后会在`darknet/backup/persons`目录下生成`yolov4-persons_best.weights`权重文件，
-       此处为了演示模型转化的过程，给出我们已经训练完成的一个模型参数[https://workshop-anker.s3.amazonaws.com/models/yolov4-persons_best.weights](https://workshop-anker.s3.amazonaws.com/models/yolov4-persons_best.weights)
-      {{% /notice%}}
+    下载Darknet框架中训练好的YOLO-v4模型及其对应的配置文件yolov4-persons.cfg， 然后将模型转化为ONNX格式:
+由于**训练YOLO-V4**章节中训练过程比较耗时，在训练完成后会在`darknet/backup/persons`目录下生成`yolov4-persons_best.weights`权重文件，此处为了演示模型转化的过程，给出我们已经训练完成的一个模型参数 https://workshop-anker.s3.amazonaws.com/models/yolov4-persons_best.weights 
 ```angular2html
 cd tensorrt_demos/yolo
 wget -c https://workshop-anker.s3.amazonaws.com/models/yolov4-persons.cfg
@@ -66,8 +62,8 @@ mv yolov4-persons_best.weights yolov4-persons.weights
 python3 yolo_to_onnx.py -m yolov4-persons
 ```
 运行截图如下所示：
-![Image](/images/040_darknet_weights_convert/convert-step-2.png)
-运行成功后会在当前目录下生成名为`yolov4-persons.onnx`的权重文件。
+<img src="/images/040_darknet_weights_convert/convert-step-2.png" alt="drawing" width="80%"/>
+运行成功后会在当前目录下生成名为yolov4-persons.onnx的权重文件。
 
 4. 模型转化：ONNX格式转化为TensorRT格式
 
@@ -76,9 +72,9 @@ python3 yolo_to_onnx.py -m yolov4-persons
 python3 onnx_to_tensorrt.py -m yolov4-persons --verbose
 ```
 运行截图如下所示：
-![Image](/images/040_darknet_weights_convert/convert-step-3.png)
-等待约十分钟之后，可以生成`yolov4-persons.trt`模型，如下图所示：
-![Image](/images/040_darknet_weights_convert/convert-step-4.png)
+<img src="/images/040_darknet_weights_convert/convert-step-3.png" alt="drawing" width="80%"/>
+等待约十分钟之后，可以生成yolov4-persons.trt模型，如下图所示：
+<img src="/images/040_darknet_weights_convert/convert-step-4.png" alt="drawing" width="80%"/>
 {{% notice info %}}
 至此，您已经完成了基于YOLO-v4的行人检测训练过程以及模型TensorRT优化过程。
 {{% /notice%}}

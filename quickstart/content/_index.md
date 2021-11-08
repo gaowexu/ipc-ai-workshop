@@ -10,7 +10,8 @@ weight: 1
 
 **开发者动手训练营**
 
-![sagemaker](images/services.png)
+<img src="images/services.png" alt="drawing" width="60%"/>
+
 
 本部署指南演示了基于亚马逊云科技EC2服务，SageMaker服务训练神经网络模型，以及基于CDK部署SageMaker Runtime Endpoint推理节点的基本流程。
 整个训练营中主要涉及到的亚马逊云科技服务组件有Elastic Compute Cloud (EC2), SageMaker, Lambda, API Gateway, Elastic Container Registry (ECR)。
