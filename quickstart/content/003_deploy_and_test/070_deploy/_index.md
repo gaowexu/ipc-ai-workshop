@@ -70,7 +70,7 @@ Access Key ID，Secret Access Key字段，如下图所示，Default output forma
 
 
 
-14. 克隆源代码并编译推理镜像，编译成功后将其推送至ECR存储，即分别执行下面三条命令：
+14. 克隆CDK部署源代码并编译推理镜像，编译成功后将其推送至ECR存储，即分别执行下面三条命令：
     ```angular2html
     git clone https://github.com/gaowexu/peddet.git
     cd peddet/deployment/
@@ -89,9 +89,9 @@ Access Key ID，Secret Access Key字段，如下图所示，Default output forma
 cd ../source
 npm install
 
-npm run cdk bootstrap aws://unknown-account/unknown-region  # 云账户中首次CDK部署堆栈时需要执行该行命令
+npm run cdk bootstrap aws://unknown-account/unknown-region  # 当前region首次CDK部署时需要执行该行命令
 export STACK_NAME=<your_stack_name>
-npm run cdk deploy -- --parameters imageName=<your_image_name>
+npm run cdk deploy -- --parameters imageName=<your_image_name>   # 需要与上一步编译指定的镜像名称一致
 ```
     运行图示如下所示：
 <img src="/images/070_deploy/deploy-step-10-1.png" alt="drawing" width="80%"/>

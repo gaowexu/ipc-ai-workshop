@@ -11,11 +11,12 @@ weight: 40
 [Open Neural Network Exchange](https://onnx.ai/)，将Darknet模型转化为onnx格式，再将onnx格式转化为TensorRT格式。
    {{% notice warning %}}
    为了与训练环境不冲突，建议重新开启一台镜像为Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)，
-    实例类型为g4dn.xlargeEC2机器，来进行模型转化，开启EC2实例的步骤与**启动EC2实例**小节中一致。
+    实例类型为g4dn.xlargeEC2机器，来进行模型转化，开启EC2实例的步骤与**启动EC2实例**小节中完全一致。
    {{% /notice%}}
 
     重新开启另一台镜像为Ubuntu Server 18.04 LTS (HVM), SSD Volume Type 64-bit (x86)，
-    实例类型为g4dn.xlarge的EC2机器，用与**启动EC2实例**小节中同样的方法SSH登录进实例，命令行执行如下安装命令：
+    实例类型为g4dn.xlarge的EC2机器，在创建EC2实例时选择**启动EC2实例**小节中创建的密钥对（不用重新创建），
+机器创建成功后用与**启动EC2实例**小节中同样的方法SSH登录进实例，命令行执行如下安装命令（耗时约15-20分钟）：
     
     ```angular2html
     sudo apt-get update &&
@@ -47,6 +48,7 @@ weight: 40
 git clone https://github.com/Gaowei-Xu/tensorrt_demos.git
 cd tensorrt_demos/plugins && make
 ```
+执行后，查看当前目录下是否生成`libyolo_layer.so`文件，若已经生成说明编译成功，该文件是YOLO-V4推理过程中加载的动态连接库。
 运行截图如下所示：
 <img src="/images/040_darknet_weights_convert/convert-step-1.png" alt="drawing" width="80%"/>
 
@@ -54,6 +56,8 @@ cd tensorrt_demos/plugins && make
 
     下载Darknet框架中训练好的YOLO-v4模型及其对应的配置文件yolov4-persons.cfg， 然后将模型转化为ONNX格式:
 由于**训练YOLO-V4**章节中训练过程比较耗时，在训练完成后会在`darknet/backup/persons`目录下生成`yolov4-persons_best.weights`权重文件，此处为了演示模型转化的过程，给出我们已经训练完成的一个模型参数 https://workshop-anker.s3.amazonaws.com/models/yolov4-persons_best.weights 
+
+    执行如下命令，将darknet权重模型转化为ONNX格式：
 ```angular2html
 cd tensorrt_demos/yolo
 wget -c https://workshop-anker.s3.amazonaws.com/models/yolov4-persons.cfg
@@ -67,7 +71,7 @@ python3 yolo_to_onnx.py -m yolov4-persons
 
 4. 模型转化：ONNX格式转化为TensorRT格式
 
-    紧接着再将ONNX格式转化为TensorRT格式，执行命令如下所示：
+    紧接着再将ONNX格式转化为TensorRT格式，执行命令如下：
 ```angular2html
 python3 onnx_to_tensorrt.py -m yolov4-persons --verbose
 ```

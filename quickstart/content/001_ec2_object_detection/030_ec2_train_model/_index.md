@@ -37,7 +37,7 @@ source ~/.bashrc
 sudo reboot
 ```
 
-3. 重启后会自动登出，重新SSH登录到EC2实例，并在在命令行敲入`nvidia-smi`，如下所示：
+3. 重启后会自动登出，等待半分钟后重新SSH登录到EC2实例，并在在命令行敲入`nvidia-smi`，出现如下图所示页面，说明CUDA等驱动安装成功：
 <img src="/images/030_ec2_train_model/train-step-1.png" alt="drawing" width="80%"/>
 
 4. 克隆Darknet框架并编译：
@@ -50,7 +50,7 @@ cd darknet && make -j4
 ```
 运行截图如下所示：
 <img src="/images/030_ec2_train_model/train-step-2.png" alt="drawing" width="80%"/>
-编译成功后查看可执行文件`darknet`是否存在，即命令行敲入`ls -al darknet`，如出现如下截图，说明编译成功：
+编译大约一至两分钟，成功后查看可执行文件`darknet`是否存在，即命令行敲入`ls -al darknet`，如出现如下截图，说明编译成功：
 <img src="/images/030_ec2_train_model/train-step-3.png" alt="drawing" width="80%"/>
 
 
@@ -71,7 +71,7 @@ unzip persons.zip
 
 6. 启动训练
     
-    首先创建backup/persons目录，下载YOLO-V4的预训练模型，
+    退回到darknet目录，创建backup/persons文件夹，下载YOLO-V4的预训练模型，
 ```angular2html
 cd ../
 mkdir -p backup/persons/
@@ -80,7 +80,7 @@ wget -c https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_op
 ```
 运行截图如下：
 <img src="/images/030_ec2_train_model/train-step-6.png" alt="drawing" width="80%"/>
-   退回到`darknet`目录，执行如下命令开启后台训练：
+   退回到darknet目录，执行如下命令开启后台训练：
 ```angular2html
 nohup ./darknet detector train data/persons.data cfg/yolov4-persons.cfg backup/yolov4.conv.137 -dont_show -mjpeg_port 8090 -map > persons_train.log 2>&1 &
 ```
@@ -94,12 +94,17 @@ nohup ./darknet detector train data/persons.data cfg/yolov4-persons.cfg backup/y
 tail -f persons_train.log
 ```
 <img src="/images/030_ec2_train_model/train-step-8.png" alt="drawing" width="80%"/>
-   键入`CTRL+C`可以中断查看日志。
+   键入`CTRL+C`可以中断查看日志。等待一段时间后便可以在backup/person目录下得到训练过程中不同阶段的模型权重文件，整个训练周期长达数小时。
+查看日志时如下图所示，可以看到训练的进度：
+<img src="/images/030_ec2_train_model/train-step-11.png" alt="drawing" width="80%"/>
 {{% notice info %}}
-训练YOLO-V4目标检测模型，依赖于三个配置，即`darknet/cfg/yolov4-persons.cfg`，`darknet/data/persons.names`和`darknet/data/persons.data`，这三个模型分别
-制定了YOLO-V4模型细节和训练周期，学习速率；目标类别信息；和训练数据集合路径配置。
+训练YOLO-V4目标检测模型，依赖于三个配置，即`darknet/cfg/yolov4-persons.cfg`，`darknet/data/persons.names`和`darknet/data/persons.data`，这三个配置文件分别
+指定了YOLO-V4模型细节和训练周期，学习速率；目标类别信息；和训练数据集合路径配置。
 <img src="/images/030_ec2_train_model/train-step-9.png" alt="drawing" width="90%"/>
 训练的过程中模型参数会被不断的写入到`backup/persons/`目录下，如下图所示：
 <img src="/images/030_ec2_train_model/train-step-10.png" alt="drawing" width="90%"/>
 {{% /notice%}}
 关于更多`darknet`训练目标检测的细节，请参考[https://github.com/AlexeyAB/darknet](https://github.com/AlexeyAB/darknet)
+{{% notice warning %}}
+至此，您已经成功启动了YOLO-V4模型训练，不同迭代次数下的模型权重会随着训练时间的增长不断被保存到backup/persons/路径下。
+{{% /notice%}}

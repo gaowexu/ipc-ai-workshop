@@ -20,7 +20,7 @@ weight: 20
 
 5. 最后创建用户，点击`Download .csv`，并将其保存好，里面包含所创建用户的Access Key ID，Secret Access Key信息，请妥善保存。
 {{% notice warning %}}
-注意保存好`Download .csv`，里面包含用户信息，后续再第三章节（**部署与验证**）会用其来配置云端环境。
+注意保存好`Download .csv`，里面包含用户信息，后续在第三章节（**部署与验证**）会用其来配置云端环境。
 {{% /notice%}}
 <img src="/images/020_ec2_provision/iam-step-5.png" alt="drawing" width="80%"/>
 
@@ -52,7 +52,7 @@ weight: 20
 14. 点击Launch:
 <img src="/images/020_ec2_provision/ec2-step-9.png" alt="drawing" width="80%"/>
 
-15. 选择Create a new key pair，创新新的密钥，如下图所示：
+15. 选择Create a new key pair，创新新的密钥，密钥对类型选择RSA，如下图所示：
 <img src="/images/020_ec2_provision/ec2-step-10.png" alt="drawing" width="80%"/>
 
 16. 输入密钥的名字，如`ipc-workshop-<your_user_id>`，点击按钮Download Key Pair进行下载，下载后妥善保存，

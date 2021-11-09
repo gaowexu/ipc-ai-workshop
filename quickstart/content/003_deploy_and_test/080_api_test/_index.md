@@ -83,6 +83,7 @@ weight: 80
 分别为(3,)， (12,)，(12,)，性别的索引含义为：{0: "男", 1: "女", 2: "其他"}，颜色索引含义为：{0: "黑", 1: "白", 2: "红", 3: "黄", 4: "蓝", 5: "绿", 6: "紫",
 7: "棕", 8: "灰", 9: "橙", 10: "多色", 11: "其它"}
 {{% /notice%}}
-
-至此，基于CDK部署的全部流程均已完成，如果您想自定义推理模型，需要在源码中进行修改（
-参考https://github.com/gaowexu/peddet/tree/master/source/containers/pedestrian-properties-recognition），然后重新进行CDK部署。
+{{% notice info %}}
+至此，基于CDK部署的全部流程均已完成，如果您想自定义推理模型，需要在源码中进行修改(
+参考https://github.com/gaowexu/peddet/tree/master/source/containers/pedestrian-properties-recognition )，然后重新进行CDK部署。
+{{% /notice%}}
